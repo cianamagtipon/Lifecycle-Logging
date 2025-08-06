@@ -1,0 +1,26 @@
+:root {
+  --earth-green: #6b8e23;
+  --earth-brown: #8b5e3c;
+  --earth-sand: #f4f1ea;
+  --earth-clay: #d9c8b4;
+  --text-color: #3e3e3e;
+  --terracotta-red: #d95d39;
+  --cinnamon-red: #a94438;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
+  color: var(--earth-brown);
+  /* background-color: var(--earth-sand); */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  overflow: auto;
+  scrollbar-gutter: stable;
+}
+
+body::-webkit-scrollbar {
+  display: none;
+}
