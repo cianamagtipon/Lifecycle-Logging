@@ -1,14 +1,25 @@
 <script setup lang="ts">
-import dayjs from 'dayjs'
+import EditUser from '@/components/forms/EditUser.vue'
+import AddUser from '@/components/forms/AddUser.vue'
+import ActionCards from '@/components/ActionCards.vue'
 
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+
 import { useActions } from '@/composables/actions'
 import { useFilter } from '@/composables/filter'
 import { useLoader } from '@/composables/loader'
 import type { User } from '@/types/user'
 
-import { View, Edit, Delete } from '@element-plus/icons-vue'
-import { useRouter } from 'vue-router'
+import {
+  View,
+  Edit,
+  Delete,
+  Plus,
+  Refresh,
+  Grid,
+  List,
+} from '@element-plus/icons-vue'
 
 const router = useRouter()
 
@@ -17,10 +28,48 @@ const toggleView = () => (isGridView.value = !isGridView.value)
 
 const { users, isLoading, error, loadUsers } = useLoader()
 const { searchQuery, filteredUsers } = useFilter(users)
-const { editUser, deleteUser, refreshUsers } = useActions(users, loadUsers)
+const { addUser, editUser, deleteUser, refreshUsers } = useActions(
+  users,
+  loadUsers,
+)
+
+const selectedUser = ref<User | null>(null)
+const isEditing = ref(false)
+const isAdding = ref(false)
+
+const isActionDialogVisible = ref(false)
+
+const openEdit = (user: User) => {
+  selectedUser.value = user
+  isEditing.value = true
+}
+const submitEdit = (updatedUser: User) => {
+  editUser(updatedUser)
+  isEditing.value = false
+}
+
+const submitAdd = (newUser: User) => {
+  addUser(newUser)
+  isAdding.value = false
+}
 
 const viewUser = (user: User) => {
   router.push({ name: 'user-profile', params: { id: user.id } })
+}
+
+const openActionDialog = (user: User) => {
+  selectedUser.value = user
+  isActionDialogVisible.value = true
+}
+
+const handleView = () => {
+  if (selectedUser.value) viewUser(selectedUser.value)
+}
+const handleEdit = () => {
+  if (selectedUser.value) openEdit(selectedUser.value)
+}
+const handleDelete = () => {
+  if (selectedUser.value) deleteUser(selectedUser.value.id)
 }
 </script>
 
@@ -31,20 +80,27 @@ const viewUser = (user: User) => {
     <div class="actions">
       <el-input
         v-model="searchQuery"
-        placeholder="Search name, email, or username"
+        placeholder="Search name or username"
         class="search-input"
         clearable
       />
 
-      <el-button type="info" @click="refreshUsers" plain>
-        Refresh Users
+      <el-button type="primary" @click="isAdding = true">
+        <el-icon><Plus /></el-icon>
       </el-button>
 
-      <el-button type="success" @click="toggleView" plain>
-        Switch to {{ isGridView ? 'Table' : 'Grid' }} View
+      <el-button type="info" @click="refreshUsers">
+        <el-icon><Refresh /></el-icon>
+      </el-button>
+
+      <el-button type="success" @click="toggleView">
+        <el-icon>
+          <component :is="isGridView ? List : Grid" />
+        </el-icon>
       </el-button>
     </div>
 
+    <!-- Skeleton -->
     <template v-if="isLoading && isGridView">
       <div class="grid-view">
         <el-card
@@ -75,27 +131,13 @@ const viewUser = (user: User) => {
         :key="user.id"
         class="card"
         shadow="hover"
+        @click="openActionDialog(user)"
+        style="cursor: pointer"
       >
         <h3>{{ user.name }}</h3>
         <p>
           <em>@{{ user.username }}</em>
         </p>
-        <p></p>
-
-        <div class="card-actions">
-          <el-button size="small" type="primary" @click="viewUser(user)"
-            >View</el-button
-          >
-          <el-button size="small" @click="editUser(user)">Edit</el-button>
-          <el-button
-            size="small"
-            type="danger"
-            plain
-            @click="deleteUser(user.id)"
-          >
-            Delete
-          </el-button>
-        </div>
       </el-card>
     </div>
 
@@ -114,7 +156,6 @@ const viewUser = (user: User) => {
         :formatter="(row: User) => `${row.address.street}, ${row.address.city}`"
       />
 
-      <el-table-column prop="createdAt" label="Created At" />
       <el-table-column label="Actions" align="center">
         <template #default="scope">
           <el-button
@@ -126,13 +167,12 @@ const viewUser = (user: User) => {
           >
             <el-icon><View /></el-icon>
           </el-button>
-
           <el-button
             class="edit-button"
             link
             type="primary"
             size="medium"
-            @click="editUser(scope.row)"
+            @click="openEdit(scope.row)"
           >
             <el-icon><Edit /></el-icon>
           </el-button>
@@ -148,5 +188,16 @@ const viewUser = (user: User) => {
         </template>
       </el-table-column>
     </el-table>
+
+    <!-- Modals -->
+    <ActionCards
+      v-model="isActionDialogVisible"
+      :user="selectedUser"
+      @view="handleView"
+      @edit="handleEdit"
+      @delete="handleDelete"
+    />
+    <EditUser v-model="isEditing" :user="selectedUser" @submit="submitEdit" />
+    <AddUser v-model="isAdding" @submit="submitAdd" />
   </div>
 </template>

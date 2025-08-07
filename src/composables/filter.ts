@@ -10,8 +10,8 @@ export function useFilter(users: Ref<User[]>) {
       ? users.value.filter(
           (user) =>
             user.name.toLowerCase().includes(q) ||
-            user.username.toLowerCase().includes(q) ||
-            user.email.toLowerCase().includes(q),
+            user.username.toLowerCase().includes(q),
+          // user.email.toLowerCase().includes(q),
         )
       : users.value
   })
