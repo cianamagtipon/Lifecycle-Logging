@@ -18,10 +18,7 @@ const user = computed<User | null>(() => {
 
 onMounted(async () => {
   await loadUsers()
-  users.value = users.value.map((user) => ({
-    ...user,
-    createdAt: dayjs(user.createdAt).format('YYYY-MM-DD HH:mm:ss'),
-  }))
+  // Don't overwrite createdAt — keep raw data so new users stay intact
 })
 
 watch(
@@ -34,17 +31,21 @@ watch(
 
 <template>
   <div class="profile-container">
+    <!-- Loading state -->
     <div v-if="isLoading" class="loading-container">
       <el-icon class="is-loading" size="48"><Loading /></el-icon>
       <p>Loading user profile...</p>
     </div>
 
+    <!-- Error state -->
     <div v-else-if="error" class="error-message">
       {{ error }}
     </div>
 
+    <!-- User not found -->
     <div v-else-if="!user" class="error-message">User not found.</div>
 
+    <!-- Profile card -->
     <el-card v-else class="user-profile-card">
       <template #header>
         <div class="card-header">

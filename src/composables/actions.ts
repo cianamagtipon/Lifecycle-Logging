@@ -6,22 +6,26 @@ export function useActions(
   users: Ref<User[]>,
   fetchUsers: () => Promise<User[]>,
 ) {
+  const normalize = (val: string) => val.trim().toLowerCase()
+
   const addUser = (newUser: User) => {
     const duplicate = users.value.find(
       (u) =>
         u.id === newUser.id ||
-        u.email === newUser.email ||
-        u.username === newUser.username,
+        normalize(u.email) === normalize(newUser.email) ||
+        normalize(u.username) === normalize(newUser.username),
     )
 
     if (duplicate) {
       if (duplicate.id === newUser.id) {
         ElMessage.closeAll()
         ElMessage.warning(`User with ID ${newUser.id} already exists.`)
-      } else if (duplicate.email === newUser.email) {
+      } else if (normalize(duplicate.email) === normalize(newUser.email)) {
         ElMessage.closeAll()
         ElMessage.warning(`Email "${newUser.email}" is already taken.`)
-      } else if (duplicate.username === newUser.username) {
+      } else if (
+        normalize(duplicate.username) === normalize(newUser.username)
+      ) {
         ElMessage.closeAll()
         ElMessage.warning(`Username "${newUser.username}" is already taken.`)
       }
@@ -33,13 +37,13 @@ export function useActions(
     ElMessage.success(`User "${newUser.name}" added successfully.`)
   }
 
-  const editUser = (updatedUser: User) => {
+  const editUser = (updatedUser: User): boolean => {
     const index = users.value.findIndex((u) => u.id === updatedUser.id)
 
     if (index === -1) {
       ElMessage.closeAll()
       ElMessage.warning('User not found.')
-      return
+      return false
     }
 
     const existingUser = users.value[index]
@@ -47,38 +51,42 @@ export function useActions(
     // check changes
     const isUnchanged =
       existingUser.name === updatedUser.name &&
-      existingUser.email === updatedUser.email &&
-      existingUser.username === updatedUser.username
+      normalize(existingUser.email) === normalize(updatedUser.email) &&
+      normalize(existingUser.username) === normalize(updatedUser.username)
 
     if (isUnchanged) {
       ElMessage.closeAll()
       ElMessage.info('No changes were made.')
-      return
+      return false
     }
 
-    // check duplicates (excluding user)
+    // check duplicates (excluding current user)
     const duplicate = users.value.find(
       (u) =>
         u.id !== updatedUser.id &&
-        (u.email === updatedUser.email || u.username === updatedUser.username),
+        (normalize(u.email) === normalize(updatedUser.email) ||
+          normalize(u.username) === normalize(updatedUser.username)),
     )
 
     if (duplicate) {
-      if (duplicate.email === updatedUser.email) {
+      if (normalize(duplicate.email) === normalize(updatedUser.email)) {
         ElMessage.closeAll()
         ElMessage.warning(`Email "${updatedUser.email}" is already taken.`)
-      } else if (duplicate.username === updatedUser.username) {
+      } else if (
+        normalize(duplicate.username) === normalize(updatedUser.username)
+      ) {
         ElMessage.closeAll()
         ElMessage.warning(
           `Username "${updatedUser.username}" is already taken.`,
         )
       }
-      return
+      return false
     }
 
     users.value[index] = { ...updatedUser }
     ElMessage.closeAll()
     ElMessage.success(`User "${updatedUser.name}" updated successfully.`)
+    return true
   }
 
   const deleteUser = (id: number) => {

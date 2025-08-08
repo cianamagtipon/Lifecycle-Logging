@@ -43,8 +43,16 @@ const openEdit = (user: User) => {
   selectedUser.value = user
   isEditing.value = true
 }
+
 const submitEdit = (updatedUser: User) => {
-  editUser(updatedUser)
+  const success = editUser(updatedUser)
+
+  if (!success && selectedUser.value) {
+    // re-trigger watcher in EditUser.vue to revert form (since it didn't before lol)
+    selectedUser.value = { ...selectedUser.value }
+    return
+  }
+
   isEditing.value = false
 }
 
@@ -65,9 +73,11 @@ const openActionDialog = (user: User) => {
 const handleView = () => {
   if (selectedUser.value) viewUser(selectedUser.value)
 }
+
 const handleEdit = () => {
   if (selectedUser.value) openEdit(selectedUser.value)
 }
+
 const handleDelete = () => {
   if (selectedUser.value) deleteUser(selectedUser.value.id)
 }
