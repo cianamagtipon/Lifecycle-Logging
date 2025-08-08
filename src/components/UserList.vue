@@ -81,6 +81,9 @@ const handleEdit = () => {
 const handleDelete = () => {
   if (selectedUser.value) deleteUser(selectedUser.value.id)
 }
+
+// For table skeleton rows
+const skeletonRows = Array(6).fill({})
 </script>
 
 <template>
@@ -131,6 +134,32 @@ const handleDelete = () => {
         </el-card>
       </div>
     </template>
+
+    <!-- Table Skeleton -->
+    <el-table
+      v-else-if="isLoading && !isGridView"
+      :data="[{}]"
+      style="width: 100%"
+      highlight-current-row
+    >
+      <el-table-column>
+        <template #default>
+          <div
+            style="
+              text-align: center;
+              font-style: italic;
+              color: #999;
+              padding: 20px 0;
+            "
+          >
+            Loading users, please wait...
+            <div class="loading-bar-container">
+              <div class="loading-bar"></div>
+            </div>
+          </div>
+        </template>
+      </el-table-column>
+    </el-table>
 
     <div v-else-if="error">{{ error }}</div>
 
@@ -211,3 +240,36 @@ const handleDelete = () => {
     <AddUser v-model="isAdding" @submit="submitAdd" />
   </div>
 </template>
+
+<style scoped>
+.loading-bar-container {
+  margin: 10px auto 0;
+  width: 50%;
+  height: 6px;
+  background-color: #eee;
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+}
+
+.loading-bar {
+  height: 100%;
+  width: 40%;
+  background-color: var(--earth-green);
+  border-radius: 3px;
+  position: absolute;
+  animation: loading-bar-slide 1.2s ease-in-out infinite;
+}
+
+@keyframes loading-bar-slide {
+  0% {
+    left: -40%;
+  }
+  50% {
+    left: 50%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+</style>
