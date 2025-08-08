@@ -18,7 +18,7 @@ const user = computed<User | null>(() => {
 
 onMounted(async () => {
   await loadUsers()
-  // Don't overwrite createdAt — keep raw data so new users stay intact
+  // Don't overwrite createdAt (keeps raw data so new users stay intact)
 })
 
 watch(
