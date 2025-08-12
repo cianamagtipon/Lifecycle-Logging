@@ -63,14 +63,11 @@ watch(user, (newUser) => {
   <div class="container">
     <div class="header">
       <div class="header-left">
-        <el-button type="info" @click="goBack">
+        <el-button type="info" @click="goBack" class="back-button">
           <el-icon><ArrowLeft /></el-icon>
+          <span class="back-text">Back</span>
         </el-button>
       </div>
-      <div class="header-center">
-        <h2>User Profile</h2>
-      </div>
-      <div class="header-right"></div>
     </div>
 
     <!-- Error state -->
@@ -123,43 +120,32 @@ watch(user, (newUser) => {
 
 .header {
   display: grid;
-  grid-template-columns: 1fr 2fr 1fr;
-  align-items: center;
+  align-items: start;
   width: 100%;
-  margin-bottom: 2rem;
 }
 
 .header-left {
   justify-self: start;
 }
 
-.header-center {
-  justify-self: center;
-}
-
-.header-center h2 {
-  margin: 0;
-  text-align: center;
-}
-
-.header-right {
-  justify-self: end;
-}
-
-.header-left .el-button {
-  width: 30px;
+.header-left .back-button {
+  display: flex;
+  align-items: center;
+  gap: 3px;
   height: 30px;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  color: var(--earth-green);
+  background-color: transparent;
+  border: none;
+  font-weight: 600;
 }
 
-.header-left .el-icon {
-  font-size: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.header-left .back-button .el-icon {
+  font-size: 20px;
+}
+
+.header-left .back-text {
+  font-style: italic;
+  font-size: 0.95rem;
 }
 
 p strong {
@@ -266,22 +252,6 @@ p strong {
 
   .section-card {
     min-height: auto;
-  }
-}
-
-@media (max-width: 600px) {
-  .header {
-    grid-template-columns: auto 1fr;
-  }
-
-  .header-left {
-    order: 1;
-    display: flex;
-    gap: 0.5rem;
-  }
-
-  .header-center {
-    order: 2;
   }
 }
 </style>
