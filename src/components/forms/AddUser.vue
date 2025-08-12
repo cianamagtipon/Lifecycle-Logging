@@ -36,16 +36,53 @@ watch(visible, (val) => emit('update:modelValue', val))
 
 // Form rules
 const rules = {
-  name: [{ required: true, message: 'Name is required', trigger: 'blur' }],
-  email: [{ required: true, message: 'Email is required', trigger: 'blur' }],
+  name: [
+    { required: true, message: 'Name is required', trigger: 'blur' },
+    {
+      min: 2,
+      max: 50,
+      message: 'Name must be between 2 and 50 characters',
+      trigger: 'blur',
+    },
+  ],
+  email: [
+    { required: true, message: 'Email is required', trigger: 'blur' },
+    {
+      type: 'email',
+      message: 'Invalid email format',
+      trigger: ['blur', 'change'],
+    },
+  ],
   username: [
     { required: true, message: 'Username is required', trigger: 'blur' },
+    {
+      min: 3,
+      max: 20,
+      message: 'Username must be 3–20 characters',
+      trigger: 'blur',
+    },
+    {
+      pattern: /^[a-zA-Z0-9_]+$/,
+      message: 'Username can only contain letters, numbers, and underscores',
+      trigger: 'blur',
+    },
   ],
   'address.street': [
     { required: true, message: 'Street is required', trigger: 'blur' },
+    {
+      min: 3,
+      max: 100,
+      message: 'Street must be between 3 and 100 characters',
+      trigger: 'blur',
+    },
   ],
   'address.city': [
     { required: true, message: 'City is required', trigger: 'blur' },
+    {
+      pattern: /^[a-zA-Z\s]+$/,
+      message: 'City can only contain letters and spaces',
+      trigger: 'blur',
+    },
   ],
 }
 
@@ -150,6 +187,7 @@ const submit = async () => {
 .zoom-card {
   width: 500px;
   padding: 1.5rem;
+  margin: 1rem;
   border-radius: 12px;
   color: var(--text-color);
   border: 1px solid var(--earth-clay);
@@ -163,10 +201,6 @@ const submit = async () => {
   font-weight: 600;
   color: var(--earth-green);
   margin-bottom: 1.25rem;
-}
-
-.form-wrapper {
-  padding: 0 12px;
 }
 
 .dialog-footer {

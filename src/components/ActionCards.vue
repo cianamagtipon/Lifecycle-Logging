@@ -66,6 +66,7 @@ const emitAction = (action: 'view' | 'edit' | 'delete') => {
 .zoom-card {
   width: 300px;
   padding: 1.5rem;
+  margin: 1rem;
   border-radius: 12px;
   color: var(--text-color);
   border-color: var(--earth-clay);

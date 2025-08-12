@@ -3,11 +3,11 @@ import type { User } from '@/types/user'
 import { fetchUsers } from '@/services/api'
 import { ElMessage } from 'element-plus'
 
-export function useLoader() {
-  const users = ref<User[]>([])
-  const isLoading = ref(false)
-  const error = ref<string | null>(null)
+const users = ref<User[]>([])
+const isLoading = ref(false)
+const error = ref<string | null>(null)
 
+export function useLoader() {
   const loadUsers = async (): Promise<User[]> => {
     isLoading.value = true
     error.value = null
@@ -47,7 +47,11 @@ export function useLoader() {
     return data
   }
 
-  onMounted(loadUsers)
+  onMounted(() => {
+    if (!users.value.length) {
+      loadUsers()
+    }
+  })
 
   return { users, isLoading, error, loadUsers }
 }

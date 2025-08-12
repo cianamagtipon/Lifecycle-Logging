@@ -1,14 +1,16 @@
 <script setup lang="ts">
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+
 import EditUser from '@/components/forms/EditUser.vue'
 import AddUser from '@/components/forms/AddUser.vue'
 import ActionCards from '@/components/ActionCards.vue'
 
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-
+import { useLifecycleHooks } from '@/composables/lifecycleHooks'
 import { useActions } from '@/composables/actions'
 import { useFilter } from '@/composables/filter'
 import { useLoader } from '@/composables/loader'
+import { useTitleCase } from '@/composables/formatter'
 import type { User } from '@/types/user'
 
 import {
@@ -23,9 +25,12 @@ import {
 
 const router = useRouter()
 
+useLifecycleHooks('UserListView')
+
 const isGridView = ref(true)
 const toggleView = () => (isGridView.value = !isGridView.value)
 
+const { formatSubmittedData, toTitleCase } = useTitleCase()
 const { users, isLoading, error, loadUsers } = useLoader()
 const { searchQuery, filteredUsers } = useFilter(users)
 const { addUser, editUser, deleteUser, refreshUsers } = useActions(
@@ -45,10 +50,10 @@ const openEdit = (user: User) => {
 }
 
 const submitEdit = (updatedUser: User) => {
-  const success = editUser(updatedUser)
+  const formattedUser = formatSubmittedData(updatedUser)
+  const success = editUser(formattedUser)
 
   if (!success && selectedUser.value) {
-    // re-trigger watcher in EditUser.vue to revert form (since it didn't before lol)
     selectedUser.value = { ...selectedUser.value }
     return
   }
@@ -57,7 +62,8 @@ const submitEdit = (updatedUser: User) => {
 }
 
 const submitAdd = (newUser: User) => {
-  addUser(newUser)
+  const formattedUser = formatSubmittedData(newUser)
+  addUser(formattedUser)
   isAdding.value = false
 }
 
@@ -93,7 +99,7 @@ const skeletonRows = Array(6).fill({})
     <div class="actions">
       <el-input
         v-model="searchQuery"
-        placeholder="Search name or username"
+        placeholder="Search name, username, or email"
         class="search-input"
         clearable
       />
@@ -135,7 +141,7 @@ const skeletonRows = Array(6).fill({})
       </div>
     </template>
 
-    <!-- Table Skeleton -->
+    <!-- Table Loading -->
     <el-table
       v-else-if="isLoading && !isGridView"
       :data="[{}]"
@@ -180,53 +186,50 @@ const skeletonRows = Array(6).fill({})
       </el-card>
     </div>
 
-    <!-- Table  -->
-    <el-table
-      v-else
-      :data="filteredUsers"
-      style="width: 100%"
-      highlight-current-row
-    >
-      <el-table-column prop="name" label="Name" />
-      <el-table-column prop="email" label="Email" />
-      <el-table-column prop="username" label="Username" />
-      <el-table-column
-        label="Address"
-        :formatter="(row: User) => `${row.address.street}, ${row.address.city}`"
-      />
-
-      <el-table-column label="Actions" align="center">
-        <template #default="scope">
-          <el-button
-            class="view-button"
-            link
-            type="primary"
-            size="medium"
-            @click="viewUser(scope.row)"
-          >
-            <el-icon><View /></el-icon>
-          </el-button>
-          <el-button
-            class="edit-button"
-            link
-            type="primary"
-            size="medium"
-            @click="openEdit(scope.row)"
-          >
-            <el-icon><Edit /></el-icon>
-          </el-button>
-          <el-button
-            class="remove-button"
-            link
-            type="primary"
-            size="medium"
-            @click.prevent="deleteUser(scope.row.id)"
-          >
-            <el-icon class="delete-icon"><Delete /></el-icon>
-          </el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+    <!-- Table -->
+    <div class="table-wrapper" v-else>
+      <el-table :data="filteredUsers" style="width: 100%" highlight-current-row>
+        <el-table-column prop="name" label="Name" min-width="150" />
+        <el-table-column prop="email" label="Email" min-width="180" />
+        <el-table-column prop="username" label="Username" min-width="140" />
+        <el-table-column
+          label="Address"
+          min-width="220"
+          :formatter="
+            (row: User) =>
+              `${toTitleCase(row.address.street)}, ${toTitleCase(row.address.city)}`
+          "
+        />
+        <el-table-column label="Actions" align="center" min-width="120">
+          <template #default="scope">
+            <el-button
+              link
+              type="primary"
+              size="small"
+              @click="viewUser(scope.row)"
+            >
+              <el-icon><View /></el-icon>
+            </el-button>
+            <el-button
+              link
+              type="primary"
+              size="small"
+              @click="openEdit(scope.row)"
+            >
+              <el-icon><Edit /></el-icon>
+            </el-button>
+            <el-button
+              link
+              type="danger"
+              size="small"
+              @click.prevent="deleteUser(scope.row.id)"
+            >
+              <el-icon><Delete /></el-icon>
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
 
     <!-- Modals -->
     <ActionCards
@@ -259,6 +262,29 @@ const skeletonRows = Array(6).fill({})
   border-radius: 3px;
   position: absolute;
   animation: loading-bar-slide 1.2s ease-in-out infinite;
+}
+
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.table-wrapper::-webkit-scrollbar {
+  height: 6px;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 3px;
+}
+
+@media (max-width: 600px) {
+  .el-table {
+    font-size: 13px;
+  }
+  .el-table .cell {
+    white-space: nowrap;
+  }
 }
 
 @keyframes loading-bar-slide {
