@@ -11,8 +11,8 @@ import UserProfile from '../UserProfile.vue'
 <style scoped>
 .user-profile {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  /* justify-content: center;
+  align-items: center; */
   height: 100vh;
 }
 </style>
