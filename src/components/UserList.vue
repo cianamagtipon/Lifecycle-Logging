@@ -190,7 +190,7 @@ const skeletonRows = Array(6).fill({})
     <div class="table-wrapper" v-else>
       <el-table :data="filteredUsers" style="width: 100%" highlight-current-row>
         <el-table-column prop="name" label="Name" min-width="150" />
-        <el-table-column prop="email" label="Email" min-width="180" />
+        <el-table-column prop="email" label="Email" min-width="200" />
         <el-table-column prop="username" label="Username" min-width="140" />
         <el-table-column
           label="Address"
@@ -200,7 +200,12 @@ const skeletonRows = Array(6).fill({})
               `${toTitleCase(row.address.street)}, ${toTitleCase(row.address.city)}`
           "
         />
-        <el-table-column label="Actions" align="center" min-width="120">
+        <el-table-column
+          label="Actions"
+          align="center"
+          min-width="115"
+          fixed="right"
+        >
           <template #default="scope">
             <el-button
               link
