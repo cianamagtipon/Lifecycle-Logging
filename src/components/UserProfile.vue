@@ -107,12 +107,11 @@ watch(user, (newUser) => {
 
 <style scoped>
 .container {
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  max-width: 800px;
+  width: 90vw;
   margin: 0 auto;
   padding: 2rem;
   gap: 2rem;
