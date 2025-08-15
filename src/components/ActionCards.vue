@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import type { User } from '@/types/user'
+import { logStyle } from '@/assets/logStyles'
 
 const props = defineProps<{
   modelValue: boolean
@@ -22,6 +23,13 @@ const close = () => {
 }
 
 const emitAction = (action: 'view' | 'edit' | 'delete') => {
+  if (action === 'edit') {
+    console.log(`[USER CARD] Attempting to edit...`)
+  }
+
+  if (action === 'view') {
+    console.log(`[USER CARD] Moving to Profile View...`)
+  }
   emit(action)
   close()
 }

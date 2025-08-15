@@ -88,6 +88,9 @@ const rules = {
 
 // Close and reset form
 const close = () => {
+  if (form.value?.id) {
+    console.log('[ADD USER] Add user canceled')
+  }
   visible.value = false
   resetForm()
 }

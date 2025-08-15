@@ -28,7 +28,12 @@ const router = useRouter()
 useLifecycleHooks('UserListView')
 
 const isGridView = ref(true)
-const toggleView = () => (isGridView.value = !isGridView.value)
+const toggleView = () => {
+  isGridView.value = !isGridView.value
+  console.log(
+    `[VIEW SWITCH] Now showing: ${isGridView.value ? 'Grid View' : 'Table View'}`,
+  )
+}
 
 const { formatSubmittedData, toTitleCase } = useTitleCase()
 const { users, isLoading, error, loadUsers } = useLoader()
@@ -59,6 +64,11 @@ const submitEdit = (updatedUser: User) => {
   }
 
   isEditing.value = false
+}
+
+const openAddUser = () => {
+  console.log('[ADD USER] Attempting to add user:')
+  isAdding.value = true
 }
 
 const submitAdd = (newUser: User) => {
@@ -104,7 +114,7 @@ const skeletonRows = Array(6).fill({})
         clearable
       />
 
-      <el-button type="primary" @click="isAdding = true">
+      <el-button type="primary" @click="openAddUser">
         <el-icon><Plus /></el-icon>
       </el-button>
 

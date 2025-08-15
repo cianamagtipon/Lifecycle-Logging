@@ -80,6 +80,9 @@ const rules = {
 }
 
 const close = () => {
+  if (form.value?.id) {
+    console.log('[EDIT USER] Edit canceled for user:', form.value)
+  }
   visible.value = false
 }
 
@@ -166,7 +169,7 @@ const submit = async () => {
   border-radius: 12px;
   color: var(--text-color);
   border: 1px solid var(--earth-clay);
-  box-shadow: 0 6px 20px rgba(139, 94, 60, 0.4) !important; /* stronger shadow and force it */
+  box-shadow: 0 6px 20px rgba(139, 94, 60, 0.4) !important;
   transition: transform 0.3s ease;
   text-align: center;
   background-color: white;

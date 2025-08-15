@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import UserListView from '@/components/views/UserListView.vue'
 import UserProfileView from '@/components/views/UserProfileView.vue'
+import ErrorView from '@/components/views/ErrorView.vue'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -12,7 +13,12 @@ const routes: RouteRecordRaw[] = [
     path: '/users/:id',
     name: 'user-profile',
     component: UserProfileView,
-    props: true, // Enables passing `id` as a prop
+    props: true, // enables passing 'id' as a prop
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'not-found',
+    component: ErrorView,
   },
 ]
 
