@@ -109,10 +109,8 @@ watch(user, (newUser) => {
 .container {
   display: flex;
   flex-direction: column;
-  /* justify-content: center;
-  align-items: center; */
-  width: 90vw;
-  margin: 0 auto;
+  width: 80vw;
+  margin: 1rem auto;
   padding: 2rem;
   gap: 2rem;
 }
