@@ -16,7 +16,7 @@ const router = useRouter()
 const userId = ref(route.params.id as string)
 
 const { toTitleCase } = useTitleCase()
-const { users, error, loadUsers } = useLoader()
+const { users, error, isLoading, loadUsers } = useLoader()
 
 const user = computed<User | null>(() => {
   return users.value.find((u) => u.id.toString() === userId.value) || null
@@ -70,8 +70,16 @@ watch(user, (newUser) => {
       </div>
     </div>
 
+    <!-- Loading state -->
+    <div v-if="isLoading" class="loading-container">
+      <p>Loading profile, please wait...</p>
+      <div class="loading-bar-container">
+        <div class="loading-bar"></div>
+      </div>
+    </div>
+
     <!-- Error state -->
-    <div v-if="error" class="status-message error-message">
+    <div v-else-if="error" class="status-message error-message">
       {{ error }}
     </div>
 
@@ -109,6 +117,7 @@ watch(user, (newUser) => {
 .container {
   display: flex;
   flex-direction: column;
+  align-items: center;
   width: 80vw;
   margin: 1rem auto;
   padding: 2rem;
@@ -155,7 +164,6 @@ p strong {
   grid-template-rows: auto auto;
   gap: 1.5rem;
   width: 100%;
-  max-width: 1200px;
 }
 
 .name-section {
@@ -227,6 +235,45 @@ p strong {
   font-style: italic;
   background-color: #f5f5f5;
   border: 1px solid #ddd;
+}
+
+.loading-container {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+  font-style: italic;
+  width: 100%;
+}
+
+.loading-bar-container {
+  margin: 10px auto 0;
+  width: 30%;
+  height: 6px;
+  background-color: #eee;
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+}
+
+.loading-bar {
+  height: 100%;
+  width: 40%;
+  background-color: var(--earth-green);
+  border-radius: 3px;
+  position: absolute;
+  animation: loading-bar-slide 1.2s ease-in-out infinite;
+}
+
+@keyframes loading-bar-slide {
+  0% {
+    left: -40%;
+  }
+  50% {
+    left: 50%;
+  }
+  100% {
+    left: 100%;
+  }
 }
 
 @media (max-width: 1024px) {

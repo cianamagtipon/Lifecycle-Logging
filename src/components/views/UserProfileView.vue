@@ -10,20 +10,26 @@ import type { NestedComment } from '@/types/comments'
 const route = useRoute()
 
 const comments = ref<NestedComment[]>([])
+const isVisible = ref(false) // controls when comments show up
 
 function getRandomComments<T>(arr: T[], count: number): T[] {
   const shuffled = arr.slice().sort(() => 0.5 - Math.random())
   return shuffled.slice(0, count)
 }
 
+// helper: delay function
+function delay(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
 onMounted(async () => {
   const raw = await fetchComments()
-
-  // grab ~10 random comments from the full list
   const randomSubset = getRandomComments(raw, 10)
-
-  // build the nested tree
   comments.value = buildCommentTree(randomSubset)
+
+  // wait before showing
+  await delay(1000)
+  isVisible.value = true
 })
 </script>
 
@@ -32,7 +38,8 @@ onMounted(async () => {
     <UserProfile />
   </div>
 
-  <div class="comment-tree">
+  <!-- Only show after delay -->
+  <div class="comment-tree" v-if="isVisible">
     <Comments
       v-for="comment in comments"
       :key="comment.id"

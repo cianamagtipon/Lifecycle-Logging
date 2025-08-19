@@ -97,6 +97,7 @@ const submitReply = () => {
 .comment-card {
   width: 80vw;
   margin: 1rem auto;
+  max-width: 1440px;
   border-radius: 12px;
   color: var(--text-color);
   border: 1px solid var(--earth-clay);
