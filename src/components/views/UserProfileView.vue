@@ -38,7 +38,7 @@ onMounted(async () => {
     <UserProfile />
   </div>
 
-  <!-- Only show after delay -->
+  <!-- only show after delay -->
   <div class="comment-tree" v-if="isVisible">
     <Comments
       v-for="comment in comments"

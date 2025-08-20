@@ -32,7 +32,14 @@ const goBack = () => {
   router.back()
 }
 
+// Helper: simulate a fake loading delay
+const fakeDelay = (ms: number) =>
+  new Promise((resolve) => setTimeout(resolve, ms))
+
 onMounted(async () => {
+  isLoading.value = true
+  await fakeDelay(1000) // fake delay on initial mount
+
   if (!users.value.length) {
     await loadUsers()
   }
@@ -40,12 +47,19 @@ onMounted(async () => {
   if (user.value && !user.value.createdAt) {
     user.value.createdAt = new Date().toISOString()
   }
+  isLoading.value = false
 })
 
 watch(
   () => route.params.id,
-  (newId) => {
+  async (newId) => {
     userId.value = newId as string
+
+    // trigger fake loading on param change
+    isLoading.value = true
+    await fakeDelay(1000)
+    isLoading.value = false
+
     if (user.value && !user.value.createdAt) {
       user.value.createdAt = new Date().toISOString()
     }
@@ -90,7 +104,7 @@ watch(user, (newUser) => {
 
     <!-- Profile sections -->
     <div v-else class="profile-sections">
-      <!-- Name Section - Full Width -->
+      <!-- Name Section -->
       <el-card class="section-card name-section card" shadow="always">
         <h3>{{ user.name }}</h3>
         <p class="username">@{{ user.username }}</p>
